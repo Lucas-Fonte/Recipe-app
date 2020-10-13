@@ -1,34 +1,63 @@
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { ColorSchemeName } from 'react-native';
-
-import NotFoundScreen from '../screens/NotFoundScreen';
+import { Main, MainNavigationProp } from '../screens/Main';
+import { Recipe, RecipeView } from '../screens/RecipeView';
 import { RootStackParamList } from '../types';
-import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
+import HeaderTitle from '../components/HeaderTitle';
+import recipes from '../data/recipes.json';
+import { useState, createContext } from 'react';
 
-// If you are not familiar with React Navigation, we recommend going through the
-// "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+interface ISearchRecipeContext {
+  currentRecipes: Recipe[];
+  searchRecipes: (searchValue: string) => void;
+}
+export const SearchRecipeContext = createContext<ISearchRecipeContext>({
+  currentRecipes: [],
+  searchRecipes: (searchValue: string) => {},
+});
+
+const Navigation = () => {
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <NavigationContainer linking={LinkingConfiguration}>
       <RootNavigator />
     </NavigationContainer>
   );
-}
+};
 
-// A root stack navigator is often used for displaying modals on top of all other content
-// Read more here: https://reactnavigation.org/docs/modal
 const Stack = createStackNavigator<RootStackParamList>();
 
-function RootNavigator() {
+const RootNavigator = () => {
+  const [currentRecipes, setCurrentRecipes] = useState(recipes);
+  const searchRecipes = (searchValue: string) => {
+    setCurrentRecipes(
+      recipes.filter(
+        (recipe) =>
+          recipe.name === searchValue ||
+          recipe.ingredients.includes(searchValue)
+      )
+    );
+  };
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Root" component={BottomTabNavigator} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-    </Stack.Navigator>
+    <SearchRecipeContext.Provider value={{ currentRecipes, searchRecipes }}>
+      <Stack.Navigator screenOptions={{ headerShown: true }}>
+        <Stack.Screen
+          name="Main"
+          component={Main}
+          options={{
+            headerTitle: () => <HeaderTitle />,
+          }}
+        />
+        <Stack.Screen
+          name="Recipe"
+          component={RecipeView}
+          options={{ headerTitle: () => <HeaderTitle /> }}
+        />
+      </Stack.Navigator>
+    </SearchRecipeContext.Provider>
   );
-}
+};
+
+export { Navigation };

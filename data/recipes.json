@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Feijoada",
+    "description": "Está é uma descrição para o prato Feijoada",
+    "ingredients": ["Arroz", "Feijão"]
+  },
+  {
+    "name": "Strogonoff",
+    "description": "Está é uma descrição para o prato Strogonoff",
+    "ingredients": ["Frango", "Arroz", "Batata"]
+  },
+  {
+    "name": "Spaghetti",
+    "description": "Está é uma descrição para o prato Spaghetti",
+    "ingredients": ["Macarrão", "Tomate", "Carne"]
+  },
+  {
+    "name": "Omelete",
+    "description": "Está é uma descrição para o prato Omelete",
+    "ingredients": ["Ovo", "Presunto", "Queijo"]
+  }
+]
